@@ -1,26 +1,20 @@
-const koa = require('koa');
+const Koa = require('koa');
+const koaBody = require('koa-body');
+const Body = require('koa-body');
+const {connect} = require('./db');
+const registerRouters = require('./routers/index')
+const cors =require('@koa/cors');
 
-const app = new koa();
+const app = new Koa();
 
+connect().then(() => {
+    app.use(cors());
+    app.use(koaBody());
+    registerRouters(app);
 
-//通过app.use注册中间件
-//中间件本质  是一个函数
-//context 上下文 当前请求的相关信息都在里面
-app.use((context) => {
-    const { request :req} = context;
-    const { url } =req;
-
-    if(url === '/user'){
-        context.response.body = 'abcde';
-        return;
-    }
-    context.body = '??';
-});
-
-//开启一个http服务
-//接受http请求 并作出处理，处理完响应
-app.listen(3000,() =>{
+  
+app.listen(3000, () => {
     console.log('启动成功');
 });
 
-console.log('112233');
+});
